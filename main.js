@@ -1,7 +1,4 @@
-
-
 window.onload = function() {
-
 	
 	var container = document.getElementById( 'container' ),
 		containerWidth, containerHeight,
@@ -43,11 +40,16 @@ window.onload = function() {
 
 		var grayness = (Math.random() * 0.5 + 0.25);
 		var uniforms = {
-			color:     { type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) }
+			color:	{ type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
+			objID:	{ type: "f", value: i / nObjects }
+		};
+		var attributes = {
+			objID: { type: 'f', value: [] }
 		};
 
 		var mat = new THREE.ShaderMaterial( {
 			uniforms: 		uniforms,
+			//attributes:     attributes,
 			vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 			fragmentShader: document.getElementById( 'fragmentshader' ).textContent
 
@@ -55,12 +57,21 @@ window.onload = function() {
 
 		var cube = new THREE.Mesh( geom, mat );
 
+/*
+		// set attribute value.
+		var vertices = geom.vertices;
+		var values = attributes.objID.value;
+		for ( var v = 0; v < vertices.length ; v++ ) {
+
+			values[ v ] = 1;
+		}*/
+
 		cube.position.set( range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) );
 		cube.rotation.set( Math.random(), Math.random(), Math.random() ).multiplyScalar( 2 * Math.PI );
 		cube.grayness = grayness;
 		cubes.add( cube );
 	}
-
+alert(1);
 	// Axes
 	axes = buildAxes();
 	scene.add( axes );
@@ -164,59 +175,79 @@ window.onload = function() {
 	}
 
 }
+
+
 /*
+
 function InitGeometry() {
-	var vertices = [
-    // Front face
-    [-2.5, -2.5,  2.5],
-    [ 2.5, -2.5,  2.5],
-    [ 2.5,  2.5,  2.5],
-    [-2.5,  2.5,  2.5],
-    
-    // Back face
-    [-2.5, -2.5, -2.5],
-    [-2.5,  2.5, -2.5],
-    [ 2.5,  2.5, -2.5],
-    [ 2.5, -2.5, -2.5],
-    
-    // Top face
-    [-2.5,  2.5, -2.5],
-    [-2.5,  2.5,  2.5],
-    [ 2.5,  2.5,  2.5],
-    [ 2.5,  2.5, -2.5],
-    
-    // Bottom face
-    [-2.5, -2.5, -2.5],
-    [ 2.5, -2.5, -2.5],
-    [ 2.5, -2.5,  2.5],
-    [-2.5, -2.5,  2.5],
-    
-    // Right face
-    [2.5, -2.5, -2.5],
-    [2.5,  2.5, -2.5],
-    [2.5,  2.5,  2.5],
-    [2.5, -2.5,  2.5],
-    
-    // Left face
-    [-2.5, -2.5, -2.5],
-    [-2.5, -2.5,  2.5],
-    [-2.5,  2.5,  2.5],
-    [-2.5,  2.5, -2.5]
-  ];
 
-  var cubeVertexIndices = [
-    0,  1,  2,      0,  2,  3,    // front
-    4,  5,  6,      4,  6,  7,    // back
-    8,  9,  10,     8,  10, 11,   // top
-    12, 13, 14,     12, 14, 15,   // bottom
-    16, 17, 18,     16, 18, 19,   // right
-    20, 21, 22,     20, 22, 23    // left
-  ];
+	var vertexPositions = [
+	// Front face
+	[-2.5, -2.5,  2.5],
+	[ 2.5, -2.5,  2.5],
+	[ 2.5,  2.5,  2.5],
+	[-2.5,  2.5,  2.5],
 
-  var geometry = new THREE.BufferGeometry();
+	// Back face
+	[-2.5, -2.5, -2.5],
+	[-2.5,  2.5, -2.5],
+	[ 2.5,  2.5, -2.5],
+	[ 2.5, -2.5, -2.5],
+
+	// Top face
+	[-2.5,  2.5, -2.5],
+	[-2.5,  2.5,  2.5],
+	[ 2.5,  2.5,  2.5],
+	[ 2.5,  2.5, -2.5],
+
+	// Bottom face
+	[-2.5, -2.5, -2.5],
+	[ 2.5, -2.5, -2.5],
+	[ 2.5, -2.5,  2.5],
+	[-2.5, -2.5,  2.5],
+
+	// Right face
+	[2.5, -2.5, -2.5],
+	[2.5,  2.5, -2.5],
+	[2.5,  2.5,  2.5],
+	[2.5, -2.5,  2.5],
+
+	// Left face
+	[-2.5, -2.5, -2.5],
+	[-2.5, -2.5,  2.5],
+	[-2.5,  2.5,  2.5],
+	[-2.5,  2.5, -2.5]
+	];
+
+	var cubeVertexIndices = [
+	0,  1,  2,      0,  2,  3,    // front
+	4,  5,  6,      4,  6,  7,    // back
+	8,  9,  10,     8,  10, 11,   // top
+	12, 13, 14,     12, 14, 15,   // bottom
+	16, 17, 18,     16, 18, 19,   // right
+	20, 21, 22,     20, 22, 23    // left
+	];
+
+	var vertices = new Float32Array( vertexPositions.length * 3 ); // three components per vertex
+	for ( var i = 0; i < vertexPositions.length; i++ )
+	{
+		vertices[ i*3 + 0 ] = vertexPositions[i][0];
+		vertices[ i*3 + 1 ] = vertexPositions[i][1];
+		vertices[ i*3 + 2 ] = vertexPositions[i][2];
+	}
+
+	// itemSize = 3 because there are 3 values (components) per vertex
+	var geometry = new THREE.BufferGeometry();
+	geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+	return geometry;
+}
+
+*/
 
 
 
 
-}*/
+
+
+
 
