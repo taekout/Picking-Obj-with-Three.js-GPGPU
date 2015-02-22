@@ -24,6 +24,7 @@ window.onload = function() {
 	container.appendChild( renderer.domElement );
 
 	scene = new THREE.Scene();
+	var scene2 = new THREE.Scene();
 
 	camera = new THREE.PerspectiveCamera( 45, containerWidth / containerHeight, 1, 10000 );
 	camera.position.set( 0, 0, range * 2 );
@@ -33,7 +34,9 @@ window.onload = function() {
 	geom = new THREE.CubeGeometry( 5, 5, 5 );
 
 	cubes = new THREE.Object3D();
+	var cubes2 = new THREE.Object3D();
 	scene.add( cubes );
+	scene2.add( cubes2 );
 
 	var nObjects = 100;
 	for(var i = 0; i < nObjects ; i++ ) {
@@ -52,10 +55,17 @@ window.onload = function() {
 			//attributes:     attributes,
 			vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 			fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+		});
 
+		var mat2 = new THREE.ShaderMaterial( {
+			uniforms: 		uniforms,
+			//attributes:     attributes,
+			vertexShader:   document.getElementById( 'vertexshader2' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentshader2' ).textContent
 		});
 
 		var cube = new THREE.Mesh( geom, mat );
+		var cube2 = new THREE.Mesh( geom, mat2 );
 
 /*
 		// set attribute value.
@@ -65,16 +75,24 @@ window.onload = function() {
 
 			values[ v ] = 1;
 		}*/
-
-		cube.position.set( range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) );
-		cube.rotation.set( Math.random(), Math.random(), Math.random() ).multiplyScalar( 2 * Math.PI );
+		var pos = [ range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) ];
+		var rot = [ Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI ];
+		cube.position.set( pos[0], pos[1], pos[2] );
+		cube.rotation.set( rot[0], rot[1], rot[2] );
 		cube.grayness = grayness;
 		cubes.add( cube );
+
+		cube2.position.set( pos );
+		cube2.rotation.set( rot );
+		cube2.grayness = grayness;
+		cubes2.add( cube2 );
 	}
-alert(1);
+
 	// Axes
 	axes = buildAxes();
 	scene.add( axes );
+	var axes2 = buildAxes();
+	scene2.add( axes2 );
 
 	// Picking stuff
 
@@ -87,39 +105,27 @@ alert(1);
 
 	controls = new THREE.TrackballControls( camera );
 	controls.zoomSpeed = 0.1;
-/*
+
 	var renderTargetParams = {
 		minFilter:THREE.LinearFilter,
 		stencilBuffer:false,
 		depthBuffer:true
 	};
 	var renderTargetTex = new THREE.WebGLRenderTarget( containerWidth, containerHeight, renderTargetParams );
-*/
+
 	// And go!
 	animate();
 
+	function renderWithPick() {
+		renderer.render( scene, camera, renderTargetTex, true );
+
+		// Read from tex.
+
+		renderer.render( scene, camera );
+	}
 
 	function onMouseMove( e ) {
 		var n1 = new Date().getTime();
-		for(var repeat = 0 ; repeat < 100 ; repeat ++) {
-			mouseVector.x = 2 * (e.clientX / containerWidth) - 1;
-			mouseVector.y = 1 - 2 * ( e.clientY / containerHeight );
-
-			var raycaster = projector.pickingRay( mouseVector.clone(), camera ),
-				intersects = raycaster.intersectObjects( cubes.children );
-
-			cubes.children.forEach(function( cube ) {
-				cube.material.color.setRGB( cube.grayness, cube.grayness, cube.grayness );
-			});
-
-				
-			for( var i = 0; i < intersects.length; i++ ) {
-				var intersection = intersects[ i ],
-					obj = intersection.object;
-
-				obj.material.color.setRGB( 1.0 - i / intersects.length, 0, 0 );
-			}
-		}
 		
 		var n2 = new Date().getTime();
 		document.getElementById("headline").innerHTML = n2 - n1;
@@ -136,7 +142,7 @@ alert(1);
 	function animate() {
 		requestAnimationFrame( animate );
 		controls.update();
-		renderer.render( scene, camera /*, renderTargetTex, true*/ );
+		renderWithPick();
 	}
 
 

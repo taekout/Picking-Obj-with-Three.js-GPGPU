@@ -17,11 +17,37 @@
 	uniform float objID;
 
 	void main() {
-		gl_FragColor = vec4( vec3(objID, objID, objID), 1.0 );
+		gl_FragColor = vec4( vec3(objID,objID,objID) , 1.0 );
 
 	}
 
 </script>
+
+
+
+<script type="x-shader/x-vertex" id="vertexshader2">
+
+
+	void main() {
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+	}
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader2">
+	
+	uniform vec3 color;
+	uniform float objID;
+
+	void main() {
+		gl_FragColor = vec4( vec3(color), 1.0 );
+
+	}
+
+</script>
+
+
 	<head>
 		<title>object picking without ray intersection.</title>
 		<script type="text/javascript" src="_libs/three.min.js"></script>
