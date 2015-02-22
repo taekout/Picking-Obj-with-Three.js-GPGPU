@@ -38,24 +38,23 @@ window.onload = function() {
 	cubes = new THREE.Object3D();
 	scene.add( cubes );
 
-
-	for(var i = 0; i < 100 ; i++ ) {
+	var nObjects = 100;
+	for(var i = 0; i < nObjects ; i++ ) {
 
 		var grayness = (Math.random() * 0.5 + 0.25);
 		var uniforms = {
-			color:     { type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
+			color:     { type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) }
 		};
 
 		var mat = new THREE.ShaderMaterial( {
 			uniforms: 		uniforms,
-			//attributes:     attributes,
 			vertexShader:   document.getElementById( 'vertexshader' ).textContent,
 			fragmentShader: document.getElementById( 'fragmentshader' ).textContent
 
 		});
+
 		var cube = new THREE.Mesh( geom, mat );
 
-		//mat.color.setRGB( grayness, grayness, grayness );
 		cube.position.set( range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) );
 		cube.rotation.set( Math.random(), Math.random(), Math.random() ).multiplyScalar( 2 * Math.PI );
 		cube.grayness = grayness;
@@ -77,7 +76,14 @@ window.onload = function() {
 
 	controls = new THREE.TrackballControls( camera );
 	controls.zoomSpeed = 0.1;
-
+/*
+	var renderTargetParams = {
+		minFilter:THREE.LinearFilter,
+		stencilBuffer:false,
+		depthBuffer:true
+	};
+	var renderTargetTex = new THREE.WebGLRenderTarget( containerWidth, containerHeight, renderTargetParams );
+*/
 	// And go!
 	animate();
 
@@ -119,7 +125,7 @@ window.onload = function() {
 	function animate() {
 		requestAnimationFrame( animate );
 		controls.update();
-		renderer.render( scene, camera );
+		renderer.render( scene, camera /*, renderTargetTex, true*/ );
 	}
 
 
@@ -158,4 +164,59 @@ window.onload = function() {
 	}
 
 }
+/*
+function InitGeometry() {
+	var vertices = [
+    // Front face
+    [-2.5, -2.5,  2.5],
+    [ 2.5, -2.5,  2.5],
+    [ 2.5,  2.5,  2.5],
+    [-2.5,  2.5,  2.5],
+    
+    // Back face
+    [-2.5, -2.5, -2.5],
+    [-2.5,  2.5, -2.5],
+    [ 2.5,  2.5, -2.5],
+    [ 2.5, -2.5, -2.5],
+    
+    // Top face
+    [-2.5,  2.5, -2.5],
+    [-2.5,  2.5,  2.5],
+    [ 2.5,  2.5,  2.5],
+    [ 2.5,  2.5, -2.5],
+    
+    // Bottom face
+    [-2.5, -2.5, -2.5],
+    [ 2.5, -2.5, -2.5],
+    [ 2.5, -2.5,  2.5],
+    [-2.5, -2.5,  2.5],
+    
+    // Right face
+    [2.5, -2.5, -2.5],
+    [2.5,  2.5, -2.5],
+    [2.5,  2.5,  2.5],
+    [2.5, -2.5,  2.5],
+    
+    // Left face
+    [-2.5, -2.5, -2.5],
+    [-2.5, -2.5,  2.5],
+    [-2.5,  2.5,  2.5],
+    [-2.5,  2.5, -2.5]
+  ];
+
+  var cubeVertexIndices = [
+    0,  1,  2,      0,  2,  3,    // front
+    4,  5,  6,      4,  6,  7,    // back
+    8,  9,  10,     8,  10, 11,   // top
+    12, 13, 14,     12, 14, 15,   // bottom
+    16, 17, 18,     16, 18, 19,   // right
+    20, 21, 22,     20, 22, 23    // left
+  ];
+
+  var geometry = new THREE.BufferGeometry();
+
+
+
+
+}*/
 
