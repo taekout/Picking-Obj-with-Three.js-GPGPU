@@ -12,17 +12,21 @@
 </script>
 
 <script type="x-shader/x-fragment" id="fragmentshader">
-	
+	// Taekyu : Because WebGL supports only unsigned_byte format for gl.ReadPixels, I need some trick to pack float value into 4 byte int.
+	// adapted from http://stackoverflow.com/questions/17981163/webgl-read-pixels-from-floating-point-render-target
+
 	uniform vec3 color;
 	uniform float objID;
+	uniform float nObjects;
 
 	void main() {
-		float tmpID = objID;
-		float quotientBy10000 = floor(objID / 10000.0);
-		tmpID -= (quotientBy10000 * 10000.0);
-		float quotientBy100 = floor(tmpID / 100.0);
-		tmpID -= (quotientBy100 * 100.0);
-		gl_FragColor = vec4( vec3(quotientBy10000, quotientBy100, tmpID) , 1.0 );
+
+		float tmpid = objID;
+
+		float q = floor(tmpid / 255.0); // max int for byte.
+
+		tmpid = objID - q * 255.0;
+		gl_FragColor = vec4( tmpid / 255.0, q / 255.0, 0, 1 );
 
 	}
 

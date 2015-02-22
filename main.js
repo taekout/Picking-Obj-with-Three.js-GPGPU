@@ -44,10 +44,8 @@ window.onload = function() {
 		var grayness = (Math.random() * 0.5 + 0.25);
 		var uniforms = {
 			color:	{ type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
-			objID:	{ type: "f", value: i / nObjects }
-		};
-		var attributes = {
-			objID: { type: 'f', value: [] }
+			objID:	{ type: "f", value: i },
+			nObjects: { type: "f", vaule: nObjects }
 		};
 
 		var mat = new THREE.ShaderMaterial( {
@@ -112,7 +110,7 @@ window.onload = function() {
 		depthBuffer:true
 	};
 	var renderTargetTex = new THREE.WebGLRenderTarget( containerWidth, containerHeight, renderTargetParams );
-	var buffer = new Uint8Array( 4 * containerWidth * containerHeight );
+	var pixels = new Uint8Array( 4 * containerWidth * containerHeight );
 
 	// And go!
 	animate();
@@ -122,15 +120,15 @@ window.onload = function() {
 
 		// Read from tex.
 		var gl = renderer.getContext();
-		
-		gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, buffer );
+		gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
+
 		renderer.render( scene2, camera );
 	}
 
 	function onMouseMove( e ) {
 		var index = Math.floor( (containerWidth * e.clientY + e.clientX) * 4 );
 
-		document.getElementById("headline").innerHTML = buffer[ index ] * 10000.0 + buffer[ index + 1 ] * 100.0 + buffer[index + 2];
+		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
 	}
 
 	function onWindowResize( e ) {
