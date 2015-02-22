@@ -82,8 +82,8 @@ window.onload = function() {
 		cube.grayness = grayness;
 		cubes.add( cube );
 
-		cube2.position.set( pos );
-		cube2.rotation.set( rot );
+		cube2.position.set( pos[0], pos[1], pos[2] );
+		cube2.rotation.set( rot[0], rot[1], rot[2] );
 		cube2.grayness = grayness;
 		cubes2.add( cube2 );
 	}
@@ -121,7 +121,7 @@ window.onload = function() {
 
 		// Read from tex.
 
-		renderer.render( scene, camera );
+		renderer.render( scene2, camera );
 	}
 
 	function onMouseMove( e ) {
