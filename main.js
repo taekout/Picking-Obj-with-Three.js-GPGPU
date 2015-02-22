@@ -1,4 +1,7 @@
+
+
 window.onload = function() {
+
 	
 	var container = document.getElementById( 'container' ),
 		containerWidth, containerHeight,
@@ -16,11 +19,17 @@ window.onload = function() {
 	containerHeight = container.clientHeight;
 
 	// Set up renderer, scene and camera
-	renderer = new THREE.CanvasRenderer();
+	renderer = new THREE.WebGLRenderer();
+
+	renderer.setClearColor( 0xff0000 );
+	//renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( containerWidth, containerHeight );
+
+	//renderer = new THREE.CanvasRenderer();
+	//renderer.setSize( containerWidth, containerHeight );
 	container.appendChild( renderer.domElement );
 
-	renderer.setClearColorHex( 0xeeeedd, 1.0 );
+	//renderer.setClearColorHex( 0xeeeedd, 1.0 );
 
 	scene = new THREE.Scene();
 
@@ -34,11 +43,24 @@ window.onload = function() {
 	cubes = new THREE.Object3D();
 	scene.add( cubes );
 
+
 	for(var i = 0; i < 100 ; i++ ) {
-		var grayness = Math.random() * 0.5 + 0.25,
-			mat = new THREE.MeshBasicMaterial(),
-			cube = new THREE.Mesh( geom, mat );
-		mat.color.setRGB( grayness, grayness, grayness );
+
+		var grayness = (Math.random() * 0.5 + 0.25);
+		var uniforms = {
+			color:     { type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
+		};
+
+		var mat = new THREE.ShaderMaterial( {
+			uniforms: 		uniforms,
+			//attributes:     attributes,
+			vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+			fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+
+		});
+		var cube = new THREE.Mesh( geom, mat );
+
+		//mat.color.setRGB( grayness, grayness, grayness );
 		cube.position.set( range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) );
 		cube.rotation.set( Math.random(), Math.random(), Math.random() ).multiplyScalar( 2 * Math.PI );
 		cube.grayness = grayness;
@@ -141,3 +163,4 @@ window.onload = function() {
 	}
 
 }
+
