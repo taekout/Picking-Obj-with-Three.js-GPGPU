@@ -1,5 +1,13 @@
 window.onload = function() {
-	
+var bRenderOriginal = false;
+document.addEventListener('keydown', function(event) {
+	if(event.keyCode == 37) {
+		bRenderOriginal = !bRenderOriginal;
+	}
+	else if(event.keyCode == 39) {
+		bRenderOriginal = !bRenderOriginal;
+	}
+});
 	var container = document.getElementById( 'container' ),
 		containerWidth, containerHeight,
 		renderer,
@@ -38,7 +46,7 @@ window.onload = function() {
 	scene.add( cubes );
 	scene2.add( cubes2 );
 
-	var nObjects = 5;
+	var nObjects = 100;
 	for(var i = 0; i < nObjects ; i++ ) {
 
 		var grayness = (Math.random() * 0.5 + 0.25);
@@ -116,13 +124,18 @@ window.onload = function() {
 	animate();
 
 	function renderWithPick() {
-		renderer.render( scene, camera, renderTargetTex, true );
+		if( bRenderOriginal ) {
+			renderer.render( scene, camera, renderTargetTex, true );
 
-		// Read from tex.
-		var gl = renderer.getContext();
-		gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
+			// Read from tex.
+			var gl = renderer.getContext();
+			gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
 
-		renderer.render( scene2, camera );
+			renderer.render( scene2, camera);
+		}
+		else
+			renderer.render( scene, camera );
+
 	}
 
 	function onMouseMove( e ) {
