@@ -38,7 +38,7 @@ window.onload = function() {
 	scene.add( cubes );
 	scene2.add( cubes2 );
 
-	var nObjects = 100;
+	var nObjects = 5;
 	for(var i = 0; i < nObjects ; i++ ) {
 
 		var grayness = (Math.random() * 0.5 + 0.25);
@@ -104,7 +104,7 @@ window.onload = function() {
 	window.addEventListener( 'resize', onWindowResize, false );
 
 	controls = new THREE.TrackballControls( camera );
-	controls.zoomSpeed = 0.1;
+	controls.zoomSpeed = 0.01;
 
 	var renderTargetParams = {
 		minFilter:THREE.LinearFilter,
@@ -112,6 +112,7 @@ window.onload = function() {
 		depthBuffer:true
 	};
 	var renderTargetTex = new THREE.WebGLRenderTarget( containerWidth, containerHeight, renderTargetParams );
+	var buffer = new Uint8Array( 4 * containerWidth * containerHeight );
 
 	// And go!
 	animate();
@@ -120,15 +121,16 @@ window.onload = function() {
 		renderer.render( scene, camera, renderTargetTex, true );
 
 		// Read from tex.
-
+		var gl = renderer.getContext();
+		
+		gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, buffer );
 		renderer.render( scene2, camera );
 	}
 
 	function onMouseMove( e ) {
-		var n1 = new Date().getTime();
-		
-		var n2 = new Date().getTime();
-		document.getElementById("headline").innerHTML = n2 - n1;
+		var index = Math.floor( (containerWidth * e.clientY + e.clientX) * 4 );
+
+		document.getElementById("headline").innerHTML = buffer[ index ] * 10000.0 + buffer[ index + 1 ] * 100.0 + buffer[index + 2];
 	}
 
 	function onWindowResize( e ) {

@@ -17,7 +17,12 @@
 	uniform float objID;
 
 	void main() {
-		gl_FragColor = vec4( vec3(objID,objID,objID) , 1.0 );
+		float tmpID = objID;
+		float quotientBy10000 = floor(objID / 10000.0);
+		tmpID -= (quotientBy10000 * 10000.0);
+		float quotientBy100 = floor(tmpID / 100.0);
+		tmpID -= (quotientBy100 * 100.0);
+		gl_FragColor = vec4( vec3(quotientBy10000, quotientBy100, tmpID) , 1.0 );
 
 	}
 
