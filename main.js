@@ -95,8 +95,6 @@ document.addEventListener('keydown', function(event) {
 	}
 
 	// Axes
-	axes = buildAxes();
-	scene.add( axes );
 	var axes2 = buildAxes();
 	scene2.add( axes2 );
 
@@ -139,7 +137,7 @@ document.addEventListener('keydown', function(event) {
 	}
 
 	function onMouseMove( e ) {
-		var index = Math.floor( (containerWidth * e.clientY + e.clientX) * 4 );
+		var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
 		console.log(index, pixels[ index ] + pixels[ index + 1 ] * 255);
 
 		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
