@@ -1,5 +1,5 @@
 window.onload = function() {
-var bRenderOriginal = false;
+var bRenderOriginal = true;
 document.addEventListener('keydown', function(event) {
 	if(event.keyCode == 37) {
 		bRenderOriginal = !bRenderOriginal;
@@ -46,7 +46,7 @@ document.addEventListener('keydown', function(event) {
 	scene.add( cubes );
 	scene2.add( cubes2 );
 
-	var nObjects = 100;
+	var nObjects = 5;
 	for(var i = 0; i < nObjects ; i++ ) {
 
 		var grayness = (Math.random() * 0.5 + 0.25);
@@ -140,6 +140,7 @@ document.addEventListener('keydown', function(event) {
 
 	function onMouseMove( e ) {
 		var index = Math.floor( (containerWidth * e.clientY + e.clientX) * 4 );
+		console.log(index, pixels[ index ] + pixels[ index + 1 ] * 255);
 
 		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
 	}
