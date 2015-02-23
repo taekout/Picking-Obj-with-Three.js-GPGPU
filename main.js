@@ -46,14 +46,13 @@ document.addEventListener('keydown', function(event) {
 	scene.add( cubes );
 	scene2.add( cubes2 );
 
-	var nObjects = 5;
+	var nObjects = 10000;
 	for(var i = 0; i < nObjects ; i++ ) {
 
 		var grayness = (i / nObjects);
 		var uniforms = {
 			color:	{ type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
-			objID:	{ type: "f", value: i+1 },
-			nObjects: { type: "f", vaule: nObjects }
+			objID:	{ type: "f", value: i+1 }
 		};
 
 		var mat = new THREE.ShaderMaterial( {
@@ -120,10 +119,14 @@ document.addEventListener('keydown', function(event) {
 
 	// And go!
 	animate();
+	var time = 0;
 
 	function renderWithPick() {
 		if( bRenderOriginal ) {
+			var n1 = new Date().getTime();
 			renderer.render( scene, camera, renderTargetTex, true );
+			var n2 = new Date().getTime();
+			time = n2 - n1;
 
 			// Read from tex.
 			var gl = renderer.getContext();
@@ -138,9 +141,9 @@ document.addEventListener('keydown', function(event) {
 
 	function onMouseMove( e ) {
 		var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
-		console.log(index, pixels[ index ] + pixels[ index + 1 ] * 255);
 
 		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
+		document.getElementById("elapsedTime").innerHTML = time.toString();
 	}
 
 	function onWindowResize( e ) {
