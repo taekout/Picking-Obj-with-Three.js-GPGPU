@@ -49,7 +49,7 @@ document.addEventListener('keydown', function(event) {
 	var nObjects = 5;
 	for(var i = 0; i < nObjects ; i++ ) {
 
-		var grayness = (Math.random() * 0.5 + 0.25);
+		var grayness = (i / nObjects);
 		var uniforms = {
 			color:	{ type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
 			objID:	{ type: "f", value: i+1 },
