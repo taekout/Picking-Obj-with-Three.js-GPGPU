@@ -35,8 +35,8 @@
 
 
 <script type="x-shader/x-vertex" id="renderpickingVert">
-	attribute float objID;
-	varying float v_objID;
+	attribute vec3 objID;
+	varying vec3 v_objID;
 
 	void main() {
 		v_objID = objID;
@@ -48,11 +48,10 @@
 
 <script type="x-shader/x-fragment" id="renderpickingFrag">
 	uniform float nObjects;
-	varying float v_objID;
+	varying vec3 v_objID;
 
 	void main() {
-		gl_FragColor = vec4( v_objID/nObjects, v_objID/nObjects, v_objID/nObjects, 1.0 );
-
+		gl_FragColor = vec4( v_objID / nObjects, 1.0 );
 	}
 
 </script>

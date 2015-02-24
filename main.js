@@ -18,7 +18,6 @@ window.onload = function() {
 		scene,
 		camera,
 		cubes,
-		geom,
 		range = 50,
 		mouseVector,
 		axes;
@@ -42,9 +41,11 @@ window.onload = function() {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	var nObjects = 5;
+	var nObjects = 100;
 
-	geom = InitGeometry(nObjects, range);
+	var geometryArr = InitGeometry(nObjects, range);
+	var geom = geometryArr[0];
+	var geom2 = geometryArr[1];
 
 	var uniforms = {
 		nObjects:     { type: 'f', value: nObjects }
@@ -69,7 +70,7 @@ window.onload = function() {
 	});
 
 	var mesh = new THREE.Mesh( geom, objIDMat );
-	var mesh2 = new THREE.Mesh( geom, shadingMat );
+	var mesh2 = new THREE.Mesh( geom2, shadingMat );
 
 	scene.add( mesh );
 	scene2.add( mesh2 );
@@ -185,12 +186,12 @@ window.onload = function() {
 function InitGeometry(nObj, range) {
 
 	var cubePoints = [
-					-2.5,-2.5,-2.5, // triangle 1 : begin
-					-2.5,-2.5, 2.5,
-					-2.5, 2.5, 2.5, // triangle 1 : end
-					2.5, 2.5,-2.5, // triangle 2 : begin
 					-2.5,-2.5,-2.5,
-					-2.5, 2.5,-2.5, // triangle 2 : end
+					-2.5,-2.5, 2.5,
+					-2.5, 2.5, 2.5,
+					2.5, 2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5,-2.5,
 					2.5,-2.5, 2.5,
 					-2.5,-2.5,-2.5,
 					2.5,-2.5,-2.5,
@@ -226,7 +227,10 @@ function InitGeometry(nObj, range) {
 	var nVertices = cubePoints.length / 3; // Should be 36. ( 6 sides * 2 triangles * 3 vertices )
 
 	var vertices = new Float32Array( nObj * nVertices * 3 ); // three components per vertex
-	var objIDArr = new Float32Array( nObj * nVertices ); // index 0 - obj ID, index 1 - number of all the objects.
+	var objIDArr = new Float32Array( nObj * nVertices );
+
+	var vertices2 = new Float32Array( nObj * nVertices * 3 ); // three components per vertex
+	var objIDArr2 = new Float32Array( nObj * nVertices * 3 );
 
 	for( var k = 0 ; k < nObj ; k++ ) { // k == obj ID.
 		
@@ -238,18 +242,94 @@ function InitGeometry(nObj, range) {
 			for ( var i = 0; i < 3 ; i++ ) { // one vertex is 3 components.
 
 				vertices[ k * nVertices * 3 + j * 3 + i ] = cubePoints[j * 3 + i] + trans[i];
-				//console.log(k * nVertices * 3 + j * 3 + i, nObj * nVertices * 3);
+
+				vertices2[ k * nVertices * 3 + j * 3 + i ] = cubePoints[j * 3 + i] + trans[i];
+				objIDArr2[ k * nVertices * 3 + j * 3 + i ] = k;
 			}
 
-			// obj ID array update.
 			objIDArr[k * nVertices + j] = k;
-			//console.log(k * nVertices + j, nObj * nVertices );
 		}
 	}
 
 	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr, 1 ) ); //2 items - index[0] == objID, index[1] == num of objects.
+	geometry.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr, 1 ) );
+
+	var geometry2 = new THREE.BufferGeometry();
+	geometry2.addAttribute( 'position', new THREE.BufferAttribute( vertices2, 3 ) );
+	geometry2.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr2, 3 ) );
+
+	//geometry.computeBoundingSphere();
+
+	return [geometry, geometry2];
+}
+
+
+
+function InitGeometry2(nObj, range) {
+
+	var cubePoints = [
+					-2.5,-2.5,-2.5,
+					-2.5,-2.5, 2.5,
+					-2.5, 2.5, 2.5,
+					2.5, 2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5,-2.5,
+					2.5,-2.5, 2.5,
+					-2.5,-2.5,-2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5,-2.5,
+					2.5,-2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					-2.5, 2.5,-2.5,
+					2.5,-2.5, 2.5,
+					-2.5,-2.5, 2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					-2.5,-2.5, 2.5,
+					2.5,-2.5, 2.5,
+					2.5, 2.5, 2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5,-2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5, 2.5,
+					2.5,-2.5, 2.5,
+					2.5, 2.5, 2.5,
+					2.5, 2.5,-2.5,
+					-2.5, 2.5,-2.5,
+					2.5, 2.5, 2.5,
+					-2.5, 2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					2.5, 2.5, 2.5,
+					-2.5, 2.5, 2.5,
+					2.5,-2.5, 2.5
+					];
+
+	var nVertices = cubePoints.length / 3; // Should be 36. ( 6 sides * 2 triangles * 3 vertices )
+
+	var vertices = new Float32Array( nObj * nVertices * 3 ); // three components per vertex
+	var objIDArr = new Float32Array( nObj * nVertices * 3 );
+
+	for( var k = 0 ; k < nObj ; k++ ) { // k == obj ID.
+		
+		var trans = [ range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()) ];
+
+		for( var j = 0 ; j < nVertices ; j++) {
+
+			// set model space transition.
+			for ( var i = 0; i < 3 ; i++ ) { // one vertex is 3 components.
+
+				vertices[ k * nVertices * 3 + j * 3 + i ] = cubePoints[j * 3 + i] + trans[i];
+				objIDArr[ k * nVertices * 3 + j * 3 + i ] = k;
+			}
+		}
+	}
+
+	var geometry = new THREE.BufferGeometry();
+	geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+	geometry.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr, 3 ) );
 
 	//geometry.computeBoundingSphere();
 
