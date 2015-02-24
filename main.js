@@ -1,5 +1,12 @@
 window.onload = function() {
 
+	var nObjects = prompt("How many cubes would you like to try picking on?");
+
+    if (nObjects == null || nObjects > 50000 || nObjects < 1 || isNumber(nObjects) == false) {
+    	alert("Invalid input or the number is too high. (It should be less than 50000.) It is set to 500 for now.");
+    	nObjects = 500;
+    }
+
 	// Keyboard event to switch between shaders.
 	var bRenderOriginal = true;
 	document.addEventListener('keydown', function(event) {
@@ -41,7 +48,6 @@ window.onload = function() {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	var nObjects = 20000;
 
 	var geometryArr = InitGeometry(nObjects, range);
 	var geom = geometryArr[0];
@@ -192,6 +198,7 @@ window.onload = function() {
 
 	}
 
+	function isNumber(obj) { return !isNaN(parseFloat(obj)) }
 }
 
 
