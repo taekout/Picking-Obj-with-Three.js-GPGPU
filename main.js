@@ -41,7 +41,7 @@ window.onload = function() {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	var nObjects = 100;
+	var nObjects = 20000;
 
 	var geometryArr = InitGeometry(nObjects, range);
 	var geom = geometryArr[0];
