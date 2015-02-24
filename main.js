@@ -124,8 +124,22 @@ window.onload = function() {
 
 	function onMouseMove( e ) {
 		var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
+		var objIDToColor = pixels[ index ] + pixels[ index + 1 ] * 255;
 
-		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
+		// color red the picked object.
+		var objIDAttr = geom2.attributes.objID;
+		var p = objIDAttr.array;
+
+		var istart = objIDToColor * 36/*num of vertices for a cube*/ * 3;
+		var iend   = (objIDToColor + 1) * 36 * 3;
+		for(var i = istart ; i < iend ; i++) {
+			if(i % 3 != 0)
+				p[i] = 0;
+		}
+
+		geom2.attributes.objID.needsUpdate = true;
+
+		document.getElementById("headline").innerHTML = objIDToColor;
 		document.getElementById("elapsedTime").innerHTML = time.toString();
 	}
 
@@ -264,77 +278,6 @@ function InitGeometry(nObj, range) {
 	return [geometry, geometry2];
 }
 
-
-
-function InitGeometry2(nObj, range) {
-
-	var cubePoints = [
-					-2.5,-2.5,-2.5,
-					-2.5,-2.5, 2.5,
-					-2.5, 2.5, 2.5,
-					2.5, 2.5,-2.5,
-					-2.5,-2.5,-2.5,
-					-2.5, 2.5,-2.5,
-					2.5,-2.5, 2.5,
-					-2.5,-2.5,-2.5,
-					2.5,-2.5,-2.5,
-					2.5, 2.5,-2.5,
-					2.5,-2.5,-2.5,
-					-2.5,-2.5,-2.5,
-					-2.5,-2.5,-2.5,
-					-2.5, 2.5, 2.5,
-					-2.5, 2.5,-2.5,
-					2.5,-2.5, 2.5,
-					-2.5,-2.5, 2.5,
-					-2.5,-2.5,-2.5,
-					-2.5, 2.5, 2.5,
-					-2.5,-2.5, 2.5,
-					2.5,-2.5, 2.5,
-					2.5, 2.5, 2.5,
-					2.5,-2.5,-2.5,
-					2.5, 2.5,-2.5,
-					2.5,-2.5,-2.5,
-					2.5, 2.5, 2.5,
-					2.5,-2.5, 2.5,
-					2.5, 2.5, 2.5,
-					2.5, 2.5,-2.5,
-					-2.5, 2.5,-2.5,
-					2.5, 2.5, 2.5,
-					-2.5, 2.5,-2.5,
-					-2.5, 2.5, 2.5,
-					2.5, 2.5, 2.5,
-					-2.5, 2.5, 2.5,
-					2.5,-2.5, 2.5
-					];
-
-	var nVertices = cubePoints.length / 3; // Should be 36. ( 6 sides * 2 triangles * 3 vertices )
-
-	var vertices = new Float32Array( nObj * nVertices * 3 ); // three components per vertex
-	var objIDArr = new Float32Array( nObj * nVertices * 3 );
-
-	for( var k = 0 ; k < nObj ; k++ ) { // k == obj ID.
-		
-		var trans = [ range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()) ];
-
-		for( var j = 0 ; j < nVertices ; j++) {
-
-			// set model space transition.
-			for ( var i = 0; i < 3 ; i++ ) { // one vertex is 3 components.
-
-				vertices[ k * nVertices * 3 + j * 3 + i ] = cubePoints[j * 3 + i] + trans[i];
-				objIDArr[ k * nVertices * 3 + j * 3 + i ] = k;
-			}
-		}
-	}
-
-	var geometry = new THREE.BufferGeometry();
-	geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-	geometry.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr, 3 ) );
-
-	//geometry.computeBoundingSphere();
-
-	return geometry;
-}
 
 
 
