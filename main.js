@@ -105,6 +105,14 @@ window.onload = function() {
 	function renderWithPick() {
 
 		if( bRenderOriginal ) {
+			var n1 = new Date().getTime();
+			renderer.render( scene, camera, renderTargetTex, true );
+			var n2 = new Date().getTime();
+			time = n2 - n1;
+
+			// Read from tex.
+			var gl = renderer.getContext();
+			gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
 
 			renderer.render( scene2, camera );
 		}
@@ -114,10 +122,10 @@ window.onload = function() {
 	}
 
 	function onMouseMove( e ) {
-		/*var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
+		var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
 
-		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;*/
-		document.getElementById("elapsedTime").innerHTML = "TEST";//time.toString();
+		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
+		document.getElementById("elapsedTime").innerHTML = time.toString();
 	}
 
 	function onWindowResize( e ) {
