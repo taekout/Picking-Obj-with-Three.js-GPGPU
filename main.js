@@ -29,7 +29,7 @@ window.onload = function() {
 	// Set up renderer, scene and camera
 	renderer = new THREE.WebGLRenderer();
 
-	renderer.setClearColor( 0x87CEFA );
+	renderer.setClearColor( 0x000000 );
 	renderer.setSize( containerWidth, containerHeight );
 
 	container.appendChild( renderer.domElement );
@@ -42,7 +42,7 @@ window.onload = function() {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	var nObjects = 255;
+	var nObjects = 5;
 
 	geom = InitGeometry(nObjects, range);
 
