@@ -139,8 +139,8 @@ window.onload = function() {
 
 		geom2.attributes.objID.needsUpdate = true;
 
-		document.getElementById("headline").innerHTML = objIDToColor;
-		document.getElementById("elapsedTime").innerHTML = time.toString();
+		document.getElementById("headline").innerHTML = "Object ID picked : " + objIDToColor.toString();
+		document.getElementById("elapsedTime").innerHTML = "Elapsed time for picking an object (ms) : " + time.toString();
 	}
 
 	function onWindowResize( e ) {
