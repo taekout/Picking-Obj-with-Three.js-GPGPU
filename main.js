@@ -1,13 +1,17 @@
 window.onload = function() {
-var bRenderOriginal = true;
-document.addEventListener('keydown', function(event) {
-	if(event.keyCode == 37) {
-		bRenderOriginal = !bRenderOriginal;
-	}
-	else if(event.keyCode == 39) {
-		bRenderOriginal = !bRenderOriginal;
-	}
-});
+
+	// Keyboard event to switch between shaders.
+	var bRenderOriginal = true;
+	document.addEventListener('keydown', function(event) {
+		if(event.keyCode == 37) {
+			bRenderOriginal = !bRenderOriginal;
+		}
+		else if(event.keyCode == 39) {
+			bRenderOriginal = !bRenderOriginal;
+		}
+	});
+
+
 	var container = document.getElementById( 'container' ),
 		containerWidth, containerHeight,
 		renderer,
