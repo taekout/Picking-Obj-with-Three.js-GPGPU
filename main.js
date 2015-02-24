@@ -17,8 +17,7 @@ document.addEventListener('keydown', function(event) {
 		geom,
 		range = 50,
 		mouseVector,
-		axes,
-		controls;
+		axes;
 
 	containerWidth = container.clientWidth;
 	containerHeight = container.clientHeight;
@@ -26,7 +25,7 @@ document.addEventListener('keydown', function(event) {
 	// Set up renderer, scene and camera
 	renderer = new THREE.WebGLRenderer();
 
-	renderer.setClearColor( 0xff0000 );
+	renderer.setClearColor( 0x87CEFA );
 	renderer.setSize( containerWidth, containerHeight );
 
 	container.appendChild( renderer.domElement );
@@ -39,59 +38,39 @@ document.addEventListener('keydown', function(event) {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	geom = new THREE.CubeGeometry( 5, 5, 5 );
+	var nObjects = 5;
 
-	cubes = new THREE.Object3D();
-	var cubes2 = new THREE.Object3D();
-	scene.add( cubes );
-	scene2.add( cubes2 );
+	geom = InitGeometry(nObjects, range);
+	var geom2 = InitGeometry(nObjects, range);
+	//console.log(geom.id, geom.drawCalls, geom.offsets);
 
-	var nObjects = 10000;
-	for(var i = 0; i < nObjects ; i++ ) {
+	var uniforms = {
+		nObjects:     { type: 'f', value: nObjects }
+	};
 
-		var grayness = (i / nObjects);
-		var uniforms = {
-			color:	{ type: "c", value: new THREE.Color().setRGB( grayness, grayness, grayness ) },
-			objID:	{ type: "f", value: i+1 }
-		};
+	var attributes = {
+		objID:        { type: 'f', value: null }
+	};
 
-		var mat = new THREE.ShaderMaterial( {
-			uniforms: 		uniforms,
-			//attributes:     attributes,
-			vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-			fragmentShader: document.getElementById( 'fragmentshader' ).textContent
-		});
+	var mat = new THREE.ShaderMaterial( {
+		uniforms: 		uniforms,
+		attributes:     attributes,
+		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+		fragmentShader: document.getElementById( 'fragmentshader' ).textContent
+	}); // obj ID custom shader.
 
-		var mat2 = new THREE.ShaderMaterial( {
-			uniforms: 		uniforms,
-			//attributes:     attributes,
-			vertexShader:   document.getElementById( 'vertexshader2' ).textContent,
-			fragmentShader: document.getElementById( 'fragmentshader2' ).textContent
-		});
+	var mat2 = new THREE.ShaderMaterial( {
+		uniforms: 		uniforms,
+		attributes:     attributes,
+		vertexShader:   document.getElementById( 'vertexshader2' ).textContent,
+		fragmentShader: document.getElementById( 'fragmentshader2' ).textContent
+	}); // normal rendering custom shader.
 
-		var cube = new THREE.Mesh( geom, mat );
-		var cube2 = new THREE.Mesh( geom, mat2 );
+	var mesh = new THREE.Mesh( geom, mat );
+	var mesh2 = new THREE.Mesh( geom2, mat2 );
 
-/*
-		// set attribute value.
-		var vertices = geom.vertices;
-		var values = attributes.objID.value;
-		for ( var v = 0; v < vertices.length ; v++ ) {
-
-			values[ v ] = 1;
-		}*/
-		var pos = [ range * (0.5 - Math.random()), range * (0.5 - Math.random()), range * (0.5 - Math.random()) ];
-		var rot = [ Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI ];
-		cube.position.set( pos[0], pos[1], pos[2] );
-		cube.rotation.set( rot[0], rot[1], rot[2] );
-		cube.grayness = grayness;
-		cubes.add( cube );
-
-		cube2.position.set( pos[0], pos[1], pos[2] );
-		cube2.rotation.set( rot[0], rot[1], rot[2] );
-		cube2.grayness = grayness;
-		cubes2.add( cube2 );
-	}
+	scene.add( mesh );
+	scene2.add( mesh2 );
 
 	// Axes
 	var axes2 = buildAxes();
@@ -106,7 +85,7 @@ document.addEventListener('keydown', function(event) {
 	window.addEventListener( 'mousemove', onMouseMove, false );
 	window.addEventListener( 'resize', onWindowResize, false );
 
-	controls = new THREE.TrackballControls( camera );
+	var controls = new THREE.TrackballControls( camera );
 	controls.zoomSpeed = 0.01;
 
 	var renderTargetParams = {
@@ -122,7 +101,9 @@ document.addEventListener('keydown', function(event) {
 	var time = 0;
 
 	function renderWithPick() {
+
 		if( bRenderOriginal ) {
+			/*
 			var n1 = new Date().getTime();
 			renderer.render( scene, camera, renderTargetTex, true );
 			var n2 = new Date().getTime();
@@ -131,19 +112,19 @@ document.addEventListener('keydown', function(event) {
 			// Read from tex.
 			var gl = renderer.getContext();
 			gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
-
-			renderer.render( scene2, camera);
+*/
+			renderer.render( scene2, camera );
 		}
 		else
-			renderer.render( scene, camera );
+			renderer.render( scene2, camera );
 
 	}
 
 	function onMouseMove( e ) {
-		var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
+		/*var index = Math.floor( (containerWidth * (containerHeight - e.clientY - 1) + e.clientX) * 4 );
 
-		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;
-		document.getElementById("elapsedTime").innerHTML = time.toString();
+		document.getElementById("headline").innerHTML = pixels[ index ] + pixels[ index + 1 ] * 255;*/
+		document.getElementById("elapsedTime").innerHTML = "TEST";//time.toString();
 	}
 
 	function onWindowResize( e ) {
@@ -198,72 +179,90 @@ document.addEventListener('keydown', function(event) {
 }
 
 
-/*
 
-function InitGeometry() {
 
-	var vertexPositions = [
-	// Front face
-	[-2.5, -2.5,  2.5],
-	[ 2.5, -2.5,  2.5],
-	[ 2.5,  2.5,  2.5],
-	[-2.5,  2.5,  2.5],
+function InitGeometry(nObj, range) {
 
-	// Back face
-	[-2.5, -2.5, -2.5],
-	[-2.5,  2.5, -2.5],
-	[ 2.5,  2.5, -2.5],
-	[ 2.5, -2.5, -2.5],
+	var cubePoints = [
+					-2.5,-2.5,-2.5, // triangle 1 : begin
+					-2.5,-2.5, 2.5,
+					-2.5, 2.5, 2.5, // triangle 1 : end
+					2.5, 2.5,-2.5, // triangle 2 : begin
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5,-2.5, // triangle 2 : end
+					2.5,-2.5, 2.5,
+					-2.5,-2.5,-2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5,-2.5,
+					2.5,-2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					-2.5, 2.5,-2.5,
+					2.5,-2.5, 2.5,
+					-2.5,-2.5, 2.5,
+					-2.5,-2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					-2.5,-2.5, 2.5,
+					2.5,-2.5, 2.5,
+					2.5, 2.5, 2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5,-2.5,
+					2.5,-2.5,-2.5,
+					2.5, 2.5, 2.5,
+					2.5,-2.5, 2.5,
+					2.5, 2.5, 2.5,
+					2.5, 2.5,-2.5,
+					-2.5, 2.5,-2.5,
+					2.5, 2.5, 2.5,
+					-2.5, 2.5,-2.5,
+					-2.5, 2.5, 2.5,
+					2.5, 2.5, 2.5,
+					-2.5, 2.5, 2.5,
+					2.5,-2.5, 2.5
+					];
 
-	// Top face
-	[-2.5,  2.5, -2.5],
-	[-2.5,  2.5,  2.5],
-	[ 2.5,  2.5,  2.5],
-	[ 2.5,  2.5, -2.5],
+	var nVertices = cubePoints.length / 3; // Should be 36. ( 6 sides * 2 triangles * 3 vertices )
 
-	// Bottom face
-	[-2.5, -2.5, -2.5],
-	[ 2.5, -2.5, -2.5],
-	[ 2.5, -2.5,  2.5],
-	[-2.5, -2.5,  2.5],
+	var vertices = new Float32Array( nObj * nVertices * 3 ); // three components per vertex
+	var objIDArr = new Float32Array( nObj * nVertices ); // index 0 - obj ID, index 1 - number of all the objects.
 
-	// Right face
-	[2.5, -2.5, -2.5],
-	[2.5,  2.5, -2.5],
-	[2.5,  2.5,  2.5],
-	[2.5, -2.5,  2.5],
+	for( var k = 0 ; k < nObj ; k++ ) { // k == obj ID.
+		
+		var trans = [ range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()), range * ( 0.5 - Math.random()) ];
 
-	// Left face
-	[-2.5, -2.5, -2.5],
-	[-2.5, -2.5,  2.5],
-	[-2.5,  2.5,  2.5],
-	[-2.5,  2.5, -2.5]
-	];
+		for( var j = 0 ; j < nVertices ; j++) {
 
-	var cubeVertexIndices = [
-	0,  1,  2,      0,  2,  3,    // front
-	4,  5,  6,      4,  6,  7,    // back
-	8,  9,  10,     8,  10, 11,   // top
-	12, 13, 14,     12, 14, 15,   // bottom
-	16, 17, 18,     16, 18, 19,   // right
-	20, 21, 22,     20, 22, 23    // left
-	];
+			// set model space transition.
+			for ( var i = 0; i < 3 ; i++ ) { // one vertex is 3 components.
 
-	var vertices = new Float32Array( vertexPositions.length * 3 ); // three components per vertex
-	for ( var i = 0; i < vertexPositions.length; i++ )
-	{
-		vertices[ i*3 + 0 ] = vertexPositions[i][0];
-		vertices[ i*3 + 1 ] = vertexPositions[i][1];
-		vertices[ i*3 + 2 ] = vertexPositions[i][2];
+				vertices[ k * nVertices * 3 + j * 3 + i ] = cubePoints[j * 3 + i] + trans[i];
+				//console.log(k * nVertices * 3 + j * 3 + i, nObj * nVertices * 3);
+			}
+
+			// obj ID array update.
+			objIDArr[k * nVertices + j] = k;
+			//console.log(k * nVertices + j, nObj * nVertices );
+		}
 	}
 
-	// itemSize = 3 because there are 3 values (components) per vertex
 	var geometry = new THREE.BufferGeometry();
 	geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+	geometry.addAttribute( 'objID', new THREE.BufferAttribute( objIDArr, 1 ) ); //2 items - index[0] == objID, index[1] == num of objects.
+
+	//geometry.computeBoundingSphere();
+
 	return geometry;
 }
 
-*/
+
+
+
+
+
+
+
+
 
 
 
