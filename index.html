@@ -1,8 +1,7 @@
 <!doctype html>
 <html>
 
-<script type="x-shader/x-vertex" id="vertexshader">
-
+<script type="x-shader/x-vertex" id="objIDShaderVert">
 	attribute float objID;
 	varying float v_objID;
 
@@ -14,10 +13,9 @@
 
 </script>
 
-<script type="x-shader/x-fragment" id="fragmentshader">
+<script type="x-shader/x-fragment" id="objIDShaderFrag">
 	// Taekyu : Because WebGL supports only unsigned_byte format for gl.ReadPixels, I need some trick to pack float value into 4 byte int.
 	// adapted from http://stackoverflow.com/questions/17981163/webgl-read-pixels-from-floating-point-render-target
-
 	uniform float nObjects;
 	varying float v_objID;
 
@@ -27,16 +25,16 @@
 
 		float q = floor(tmpid / 255.0); // max int for byte.
 
-		tmpid = objID - q * 255.0;
-		gl_FragColor = vec4( tmpid / 255.0, q / 255.0, 0, 1 );
+		tmpid = v_objID - q * 255.0;
 
+		gl_FragColor = vec4( tmpid / 255.0, q / 255.0, 0, 1 );
 	}
 
 </script>
 
 
 
-<script type="x-shader/x-vertex" id="vertexshader2">
+<script type="x-shader/x-vertex" id="renderpickingVert">
 	attribute float objID;
 	varying float v_objID;
 
@@ -48,7 +46,7 @@
 
 </script>
 
-<script type="x-shader/x-fragment" id="fragmentshader2">
+<script type="x-shader/x-fragment" id="renderpickingFrag">
 	uniform float nObjects;
 	varying float v_objID;
 

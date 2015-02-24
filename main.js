@@ -38,11 +38,9 @@ document.addEventListener('keydown', function(event) {
 	camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
 
 	// Add some cubes to the scene
-	var nObjects = 5;
+	var nObjects = 255;
 
 	geom = InitGeometry(nObjects, range);
-	var geom2 = InitGeometry(nObjects, range);
-	//console.log(geom.id, geom.drawCalls, geom.offsets);
 
 	var uniforms = {
 		nObjects:     { type: 'f', value: nObjects }
@@ -52,29 +50,29 @@ document.addEventListener('keydown', function(event) {
 		objID:        { type: 'f', value: null }
 	};
 
-	var mat = new THREE.ShaderMaterial( {
+	var objIDMat = new THREE.ShaderMaterial( {
 		uniforms: 		uniforms,
 		attributes:     attributes,
-		vertexShader:   document.getElementById( 'vertexshader' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader' ).textContent
-	}); // obj ID custom shader.
+		vertexShader:   document.getElementById( 'objIDShaderVert' ).textContent,
+		fragmentShader: document.getElementById( 'objIDShaderFrag' ).textContent
+	});
 
-	var mat2 = new THREE.ShaderMaterial( {
+	var shadingMat = new THREE.ShaderMaterial( {
 		uniforms: 		uniforms,
 		attributes:     attributes,
-		vertexShader:   document.getElementById( 'vertexshader2' ).textContent,
-		fragmentShader: document.getElementById( 'fragmentshader2' ).textContent
-	}); // normal rendering custom shader.
+		vertexShader:   document.getElementById( 'renderpickingVert' ).textContent,
+		fragmentShader: document.getElementById( 'renderpickingFrag' ).textContent
+	});
 
-	var mesh = new THREE.Mesh( geom, mat );
-	var mesh2 = new THREE.Mesh( geom2, mat2 );
+	var mesh = new THREE.Mesh( geom, objIDMat );
+	var mesh2 = new THREE.Mesh( geom, shadingMat );
 
 	scene.add( mesh );
 	scene2.add( mesh2 );
 
 	// Axes
-	var axes2 = buildAxes();
-	scene2.add( axes2 );
+	var axes = buildAxes();
+	scene2.add( axes );
 
 	// Picking stuff
 
@@ -103,20 +101,11 @@ document.addEventListener('keydown', function(event) {
 	function renderWithPick() {
 
 		if( bRenderOriginal ) {
-			/*
-			var n1 = new Date().getTime();
-			renderer.render( scene, camera, renderTargetTex, true );
-			var n2 = new Date().getTime();
-			time = n2 - n1;
 
-			// Read from tex.
-			var gl = renderer.getContext();
-			gl.readPixels( 0, 0, containerWidth, containerHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels );
-*/
 			renderer.render( scene2, camera );
 		}
 		else
-			renderer.render( scene2, camera );
+			renderer.render( scene, camera );
 
 	}
 
